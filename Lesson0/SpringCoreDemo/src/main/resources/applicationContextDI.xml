@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-3.1.xsd
+">
+    
+    <!-- Para abilitar prototype, se usa el atributo scope="prototype"-->
+    <bean  id="myReport" class="com.r2d2.springcoredemo.DepInj.Report"></bean>
+    
+    <!-- Inyeccion por constructor-->
+    <bean id="myEmployee" class="com.r2d2.springcoredemo.IoC.Secretary">
+        <constructor-arg ref="myReport"> </constructor-arg>
+    </bean>
+    
+    
+    <!-- Inyeccion por metodo setter-->
+    <!-- Tener en cuenta el nombre del metodo setter, se quita la palabra 'set', y la primer letra es minuscula-->
+    <!--Ejemplo: setReportMaker (nombre metodo 'setter' en la clase) => name="reportMaker" (nombre en la porpiedad 'name')-->
+    <bean id="GeneralManagerEmployee" class="com.r2d2.springcoredemo.IoC.GeneralManager">
+        <property name="reportMaker" ref="myReport" > </property>
+        <!-- Inyeccion de campos de clase -->
+         <property name="email" value="evil_corp@mail.com" > </property>
+         <property name="companyName" value="Evil - Corp" > </property>
+    </bean>
+    
+</beans>

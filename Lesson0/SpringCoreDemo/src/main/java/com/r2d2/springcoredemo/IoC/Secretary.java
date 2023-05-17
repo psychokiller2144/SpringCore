@@ -6,6 +6,11 @@ public class Secretary implements Employee {
 
     private ReportMaker reportMaker;
 
+    public Secretary() {
+        
+    }
+
+    
     public ReportMaker getReportMaker() {
         return reportMaker;
     }

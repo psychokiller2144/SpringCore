@@ -1,12 +1,13 @@
 package com.r2d2.springcoredemo.IoC;
 
 import com.r2d2.springcoredemo.DepInj.ReportMaker;
-import com.r2d2.springcoredemo.IoC.Employee;
 
 public class AreaManager implements Employee{
     
+    
     private ReportMaker reportMaker;
     
+    public AreaManager(){}
     
     public AreaManager(ReportMaker reportMaker){
         this.reportMaker = reportMaker;

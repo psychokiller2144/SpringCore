@@ -4,7 +4,7 @@ public class Report implements ReportMaker{
 
     @Override
     public String generateReport() {
-        return " <report body> body of report should go here </report body>";
+        return "\t<report body> body of report should go here </report body>";
     }
     
 }
