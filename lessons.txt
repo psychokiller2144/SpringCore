@@ -1,0 +1,190 @@
+
+<INVERSION OF CONTROL>
+Primero creo una clase muy sencilla GeneralManager, y creo un metodo que se llama getTask(), instanciando esto en la clase principal para empezar a usar el metodo getTask() de esa instancia. Luego hay que mecionar que es importante
+	la abstraccion, por ejemplo, creando una interface de tipo Employee, ya que la clase anterior aunque sea un gerente general no deja de ser tambien un empleado. Esto se encuentra en com.r2d2.springcoredemo.IoC. Hasta este punto
+	no estamos usando Spring como tal, asi que se arregla agregando el archivo context.xml.
+
+Segundo, una vez que vamos creando el archivo context, empezamos obviamente con el bean del empleado ya que es este con el que estamos trabajando.
+
+'''<bean id="myEmployee" class="com.r2d2.springcoredemo.IoC.GeneralManager">
+</bean>
+'''
+Con lo anterior solo nos creamos un objeto GeneralManager con ayuda de spring, por ahora solo nos enfocamos en la parte de Inversion Of Control, es decir externalizar el control de los objetos a un agente externo.
+En resumen hay que:
+1.- Cargar el archivo XML
+2.- Pedir el Bean
+3.- Utilizar el Bean
+3.- Cerrar el XML, context.close()
+
+
+<DEPENDEDNCIE INYECTION>
+DI usando constructor
+	Crear la interface de la dependencia ReportMaker.
+	Crear un constructor en la clase(cualquiera de las tres que tenemos) para inyectar esa dependencia.
+	Configurar la DI en el archivo context.xml
+
+DI usando Setter
+	Crear la interface de la dependencia ReportMaker.
+	Crear un metodo setter en la clase(cualquiera de las tres que tenemos) para inyectar esa dependencia.
+	Configurar la DI en el archivo context.xml
+
+==================================================================================================================================================================================================================================================================
+Lesson0: <11,12> 
+	-> En 11 se muestra la inyeccion de propiedades de campos en una clase, desde el archivo xml, con la etiqueta "property" y su atributo "value=", en el ejemplo agrega las propiedades Email y Correo, para que sean inyectadas.
+	podriamos agregar mas campos y hacer una demostracion de esto, pero considero que se entiende con lo que tenemos hasta ahora, si acaso lo agregamos en GeneralManager y ya. Ten en cuenta que esto tiene un costo, y es que en lugar
+	de guardar una referencia de tipo Employee, ahora tendras que guardar una referencia de tipo GeneralManager y adicionalemente cambiar la clase que espera el metodo .getBean();
+
+	-> En 12 se muestra como asignar esos valores desde una archivo de propiedades. el tipico porperties file y utiliza nuevamente las propiedades de email y companyName.
+	Para agregar este archivo de propiedades, pues simplemente lo creas como ya sabes ... fileName.properties y para usarlo debes agregar lo siguiente en el xml
+	<context:property-placeholder location="classpath:filename.properties"> y para usarlo en los beans es value="${propertie-key}"
+	
+	-> En 13 se muestra el patron de diseño singleton y prototype
+
+Lesson0-1: <14> Se muestra el ciclo de vida del bean, lo mas importante a resaltar es que existe un metodo init() y un destroy(), que se ejecutan antes y
+		despues de usar el bean respectivamente. Todo lo anterior se define en el archivo xml.
+
+
+Lesson0-1: <15, 16> En 15 se da la introduccion a las anotaciones Java.
+		En 16 se utiliza el component-scan y la anotacion @Component para registrar beans en vez de usar el xml 
+
+Lesson0-1: <20> @Qualifier, basicamente nos ayuda a identificar una unica implementacion, para la inyeccion, en caso de que exista mas de una. En nuestro ejemplo, si existiera mas una clase
+		Que simplemente la interfaz ReportMaker. Se usa la convencion del nombre de la clase, con la primer letra en minusculas.
+
+
+Lesson0-1: <22> metodo init() @PostConstruct y destroy() @PreDestroy misma teoria que en <14> solo que con anotaciones
+
+
+Lesson1:
+	<73> Una simple prueba de un controlador de tipo REST, que regresa una cadena de texto y es mostrada en el navegador.
+
+Lesson2:
+	<74> 2.1 Se modifica la clase controlador, para que se trabaje con MVC, retornando ahora el nombre de un archivo HTML. Se crea una pagina index.html comun y se verifica si
+		el controlador regresa correctamente la cadena para que la vista (index.html) sea mostrada.
+
+	<74> 2.2 Se agrega [xmlns:th="http://www.thymeleaf.org"] como atributo a la etiqueta html del archivo index.html y se realiza una prueba para verificar si Thymeleaf esta
+		trabajando correctamente, haciendo uso de [<p th:text="Mensaje"></p>], notando que si se colocan espacios o simbolos no funciona. Adicionalmente tambien se hace
+		un cambio en application.properties para evitar el  cache usando [spring.thymeleaf.cache=false].
+
+	<75> 2.3 Se agrega el objeto [Model model] en el unico metodo de nuestra clase controlador para poder compartir informacion con nuestra vista. Una ves se realiza lo
+		necesario para compartir informacion entre el controlador y la vista, se coloca en index.html [<p th:text="${mensaje}"></p>], accediendo asi al mensaje que colo-
+		camos en la clase controlador. Adicionalmente se busca agregar LiveReload como extension a nuestro navegador. Tambien se menciona el concepto de como leer un 
+		mensaje desde el archivo de prpiedades, poco relevante por ahora.
+
+	<76> 2.4 Se crea la clase Persona para representar a personas en la vista a traves de nuestro controlador. En la vista simplemente se agrega [<p> Attr: <span th:text="${persona.attr}"></span> </p> <br/>]
+		para cada atributo de la clase Persona, es decir se muestra la informacion de una sola persona.
+
+	<77> 2.5 Se crea un listado de personas y este es mostrado atraves de una tabla con etiquetas de control de thymeleaf, como [<div th:if="${personas != null and !personas.empty}">] y
+		[<tr th:each="persona : ${personas}">]. Se le agrega a la tabla ciertos estilos CSS -> POSIBLE EJERCICIO 
+
+Lesson3:
+	<81> 3.1 Se agregan las dependencias necesarias para trabajar con spring data y mysql, utilizando el wizard de netbeans, dando clic derecho desde el archivo POM.xml, no obstante en mi
+		caso no funciona y procedo a agregar las dependencias de manera manual, ya que es lo mismo. Una vez agregadas las dependencias se hace clean and build y las bibliotecas son
+		descargadas, no obstante suele dar un error ya que se busca una configuracion por automatica para la base de datos, la cual no esta aun y se procede a agregarla.
+
+	<81> 3.2 La configuracion a la base de datos se hace desde el archivo de application.properties.
+	
+	<82> 3.3 Se mueve la clase controlador HomeController a otro paquete, [com.example.web]. Se convierte la clase Persona en una entidad, con [@Entity] agregando todas las anotaciones
+		necesarias para ello.
+
+	<83> 3.4 Se crea la interfaz PersonaDao en un nuevo paquete, para implementar el concepto de los repositorios de srpingboot. Una instancia que implementa esta interfaz, es inyectada
+		en la clase HomeController para que desde ahi, se use el metodo .findAll() y recupere los registros que tenemos en nuestra base de datos.
+
+Lesson4:
+	<84> 4 Se crea una arquitectura multicapas, desacoplando la capa de presentacion (MVC),la capa de servicio (Clase PersonaService) y la capa de acceso a datos (PersonaDao). En la clase
+		HomeController, ahora se inyecta una instancia de PersonaService, claramente atraves de la clase que implementa esta interfaz (PersonaServiceImp).
+
+Lesson5:
+	<85> 5.1 Se agrega en nuestra pagina index.html un anchor con la direccion /agregar, para que nos diriga a una pagina que presentara un formulario para agregar una persona. Adicional a
+		esto, en nuestra clase controlador, se agrega un metodo [agregar()] que se encargara de resolver la anterior peticion, recibiendo un parametro de tipo persona otorgado por spring
+		y regresa el nombre de una nueva vista llamada [modificar], donde estara el formulario para agregar/modificar a una persona. En este archivo simplemente habra un formulario.
+	
+	<86> 5.2 Para procesar la solicitud del formulario realizado en [modificar.html], se crear un nuevo metodo, con la anotacion [@PostMapping("/guardar")], para que nuevamente se le inyecte
+		un objeto Persona con los datos provenientes del formulario, y simplemente se invoque el metodo .guardar() de nuestra instancia de servicio. Finalmente este nuevo metodo regresa
+		[return "redirect:/";] que hace lo que parece, hace una redireccion a la "pagina principal".
+
+	<86> 5.3 Para modificar un registro, se agrega en nuestro [index.html] un nuevo [<th> Editar </th> y <th> Eliminar </th>], pero en las importante es agregar un enlace (path variable) para
+		que cuando se acceda a esa URL tambien se pase el id del objeto persona, [<a th:href="@{/editar/} + ${persona.idPersona}">].
+
+	<87> 5.4 Para eliminar un registro,  colocamos lo propio en la tabla , es decir [<a th:href="@{/eliminar/} + ${persona.idPersona}">], luego tendriamos que mapear esta accion a nuestro 
+		controlador colocando el GetMapping("/eliminar/{idPersona}") en el metodo eliminar, y solo basta con usar la el metodo eliminar de la nuestra clase de servicioPersona.
+		Una cosa a resaltar, es el uso de los query parameters, que en este caso para eliminar quedaria de la siguiente forma:
+		<a th:href="@{/eliminar(idPersona=${persona.idPersona})}"> y en el controlador solo quitarias el pathVariable, es decir solo quedaria asi : GetMapping("/eliminar"), todo lo demas
+		se queda como estaba.
+
+Lesson6: validaciones
+	<88>
+
+Lesson7:
+	<89> Lo mas importante a resaltar en el uso de plantillas, es que no es necesario que la etiqueta declarada en el index, sea la misma declarada en la plantilla, ni solo se puede hacer con 
+		header o footer, de hecho tu puedes declarar como plantillas cualquier elemento o estructura html y este elemento o estructura sera colocado alla donde sea que tu lo indiques. In-
+		cluso puede haber plantillas dentro de plantillas.
+
+<!--La leccion 10 y 11 por "casualidad" se juntaron en una sola xd -->
+
+Lesson10:
+	<92> Simplemente se agrega la dependencia de spring security y se realiza una prueba con el usuario user y el password generado automaticamente.
+
+	<93> Se agrega la clase de configuracion [SecurityConfig] con todos sus agregados. Adicionalmente se agrega en la pagina de [plantilla], un enlace para que se realice una especie de logout.
+
+	<94> Se agrega el metodo para restringir las urls respecto de un determinado usuario [configure(HttpSecurity http)]. Se agrega un controlador de vista [addViewControllers(ViewControllerRegistry registro)],
+		que basicamente redirige o selecciona una vista si no hay necesidad de pasar por un controlador. Con lo anterior, es necesario crear una pagina de login personalizada, con lo cual
+		esta es creada en el paquete correspondiente [templates].  Tambien se crea una pagina de error para que esta sea mostrada cuando un usuario trate de acceder a un recurso al cual no deberia poder
+		acceder. Adicionalmente se realiza un ajuste en el controlador [home(Model model, @AuthenticationPrincipal User user)], para basicamente ver la informacion del usuario que se ha loggeado.
+
+{en realidad lesson 11}
+Lesson10:
+	<95> 10.1 Agregamos una dependencia adicional, para poder trabajar con spring security y thymeleaf. Adicionalmente agregamos un namespace [xmlns:sec="http://www.thymeleaf.org/extras/spring-security"] 
+		adicional a nuestra plantilla.html. Agregamos tambien en nuestra plantilla las etiquetas necesarias para verificar el usuario loggeado y los roles que tiene.
+	    
+	     10.2 En la pagina index.html, agregamos tambien [xmlns:sec="http://www.thymeleaf.org/extras/spring-security"], para posteriormente restringir lo que se muestra al usuario, es decir si un usuario
+		no tiene permisos para editar/eliminar/crear no deberia si quiera aparecerle esas opciones, estas opciones basicamente se eliminan de un usuario con el rol USER, se quitan agregar persona
+		y los links de editar y eliminar.
+
+{en realidad lesson 12}
+Lesson11:
+	<96> Se agrega a la base de datos dos nuevas tablas, usuarios y roles, para que se obtengan desde la base de datos y no esten hardcodeados en nuestro codigo. Adicionalmente se configuran las claves
+		foraneas en nuestra base de datos, es decir la tabla de rol, va a tener un id, un ROL [ROLE_ADMIN, ROLE_USER] y la clave foranea hara referencia a un id de un usuario.
+	
+	<97> Se crear la clase encryptPassword, para realizar un cifrado de las claves que tienen los usuarios, en este caso el usuario admin y el usuario user. Posteriormente se realiza este cifrado y se 
+		actualiza la clave en la base de datos, en concreto en la tabla de usuarios se coloca la clave cifrada en lugar de la clave en texto plano.
+
+	<98> Se crea la clase [Rol] con todas las caracteristicas necesarias para ser una entidad de persistencia; en esta clase no se mapea el atributo id_usuario que tenemos en la base de datos, porque
+		de este lado de la relacion no es necesario, es decir un rol va a pertenecer solo a un usuario unoAmuchos, la relacion se va a mapear en la clase usuario. 
+		Se crea la clase [Usuario] con todas las caracteristicas necesarias para ser una 
+		entidad de persistencia, resaltando que hay que agregar las anotaciones [@OneToMany | @JoinColumn(name="id_usuario")]. Uno a muchos porque un usuario puede tener multiples roles. La
+		segunda anotacion, basicamente se coloca para indicar cual sera la clave foranea y por lo tanto la que crea la relacion entre las dos tablas que tenemos [rol & usuario]. Posteriormente
+		se crea la interfaz [UsuarioDAO] para realizar acciones de manera analoga como hicimos en [PersonaDao], en este caso heredamos de JpaRepository<Usuario, Long>, usando el metodo findByUsername.
+		Siguiendo el patron y la arquitectura de multicapas, creamos la clase [UsuarioService], para trabajar de manera analoga como en [PersonaService] con sus sutilezas.
+
+	<99> Se modififica [SecurityConfig] para trabajar ahora con los usuarios creados desde la base de datos, y no crearlos directamente en el metodo. Adicionalmente se agrega una dependencia para inyectar
+		del tipo [UserDetailsService] que es una interfaz, pero se creara una instancia de nuestra clase UsuarioService, tal como hicimos en HomeController con [PersonaService]
+
+{en realidad lesson 13}
+Lesson12:
+	<100> Muestra la aplicacion
+	
+	<101> Se agregan dependedncias de bootstrap, font awesome y locator
+	
+	<102> Se agrega bootstrap a la aplicacion, en concreto en la pagina plantilla.html | se indica la etiqueta <head> como plantilla para que sea reemplazada en index.html y en login
+
+	<103> Se agrega la barra de navegacion o de menu, <nav> | se agregan tres mensajes en cada uno de los archivos de mensajes, el defecto, el de español y el de ingles | 
+	
+	<104> Se agrega el header <section> debajo del elemento <nav> | se modifica la etiqueta footer, se agrega una clase, se crea un div-container...etc dentro de footer
+	
+	<105> Se mejora el login, se agrega el elemento header de nuestra plantilla, este se agrega debajo del body, una cosa el el <header> y otra el <head>. | adicionalmente tambien se
+		agrega el footer 
+
+
+
+Primer solucion para conectarse a una base de datos
+by sun microsystems 1997
+parte del standart de java
+
+
+JPA es una especificacion que nos permite 
+el mapeo entre los objetos del codigo  y las tablas en la base de datos.
+Se oculta todo lo relacionado con sql 
+
+podemos ver a jpa como una interface y a hibernate como una implementacion de esa interface
+
+spring data jpa es una biblioteca que agrega una capa extra de abstraccion a nuestro JPA provider como hibernate
